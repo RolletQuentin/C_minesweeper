@@ -19,7 +19,6 @@
 
 #include "usefull_functions.h"
 #include "deminor.h"
-#include "gui.h"
 
 /*!
 \fn int main(int argc, char **argv)
@@ -33,28 +32,10 @@
 */
 int main(int argc, char **argv)
 {
-    int int_choice; // choice to choose the version og the deminor
+    printf("Welcome to the minesweeper !\n");
 
-    printf("Bienvenue dans le démineur !\n");
-
-    int_choice = askNumberWithRange("Veuillez choisir la version du jeu :\n\t1 -- Démineur en console (fonctionnel)\n\t2 -- Démineur en fenêtre (ne fonctionne pas à tout les coups et n'est pas totalement terminé, c'est juste comme ça..)\n", "Merci de renseigner un entier entre 1 et 2\n", 1, 2);
-
-    switch (int_choice)
-    {
-    case 1:
-        playGame();
-        break;
-
-    case 2:
-        mainPrint(argc, argv);
-        break;
-
-    default:
-        fprintf(stderr, "Une erreur inconnue s'est produite, merci de relancé le programme.\n");
-        exit(-1);
-        break;
-    }
-
+    playGame();
+ 
     // because all is good
     return (0);
 }

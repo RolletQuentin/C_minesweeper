@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
-#include <gtk/gtk.h>
 #include "usefull_functions.h"
 
 /*! \struct boardCase
@@ -19,7 +18,6 @@ typedef struct
     int int_hasMine;       /*!< 0 if the case doesn't have a mine, else 1 */
     int int_numberOfMines; /*!< number of next cases with a mine */
     int int_hasFlag;       /*!< 0 if the case doesn't have a flag, else 1*/
-    GtkWidget *p_widget;   /*!< the widget linked to the case*/
     int int_row;           /*!< the row of the case*/
     int int_column;        /*!< the colum of the case*/
 } boardCase;
@@ -35,11 +33,6 @@ struct gameData
     int int_numberOfColumns;  /*!< the number of columns of the board game */
     int int_numberOfMines;    /*!< the total number of mines in the board game (hidden or not)*/
     int int_numberOfFlags;    /*!< the number of flags play by the player*/
-    GtkWidget *p_boxMain;     /*!< the main box of the gtk window (main container) */
-    GtkWidget *p_boxMenu;     /*!< the box menu (where you have some buttons to pause the game for example)*/
-    GtkWidget *p_boxInfo;     /*!< the box info (where you have the timer and the flag's counter)*/
-    GtkWidget *p_labelFlags;  /*!< the label link to the counter of flags*/
-    GtkWidget *p_labelTime;   /*!< the label link to the timer*/
 };
 
 /*!
@@ -55,7 +48,7 @@ struct gameData
 void printBoardGame(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns);
 
 /*!
-\fn boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberOfMines, int int_gtk, struct gameData *p_data)
+\fn boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberOfMines, struct gameData *p_data)
 \author Quentin Rollet <quentin.rollet@cy-tech.fr>
 \version 0.1 Initialization
 \date 08/12/2022
@@ -67,10 +60,10 @@ void printBoardGame(boardCase **ttbc_board, int int_numberOfLines, int int_numbe
 \param *p_data a pointer to data relative to the game
 \return the board
 */
-boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberOfMines, int int_gtk, struct gameData *p_data);
+boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberOfMines, struct gameData *p_data);
 
 /*!
-\fn void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_i, int int_j, int int_gtk)
+\fn void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_i, int int_j)
 \author Quentin Rollet <quentin.rollet@cy-tech.fr>
 \version 0.1 Initialization
 \date 18/12/2022
@@ -82,10 +75,10 @@ boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberO
 \param int_j the column of the case selected
 \param int_gtk 0 if we don't have gui, 1 else
 */
-void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_i, int int_j, int int_gtk);
+void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_i, int int_j);
 
 /*!
-\fn int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_line, int int_column, int int_choice, int int_gtk)
+\fn int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_line, int int_column, int int_choice)
 \author Quentin Rollet <quentin.rollet@cy-tech.fr>
 \version 0.1 Initialization
 \date 18/12/2022
@@ -99,7 +92,7 @@ void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfCol
 \param int_gtk 0 if we don't have gui, 1 else
 \return 0 if nothing happend, -1 if an error is occur, 1 if the player lose the game
 */
-int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_line, int int_column, int int_choice, int int_gtk);
+int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_line, int int_column, int int_choice);
 
 /*!
 \fn void playGame()
