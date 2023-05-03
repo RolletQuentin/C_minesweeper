@@ -5,8 +5,8 @@ docdir=./doc/
 savedir=./save/
 PROG=main
 FLAGS= -Wall
-CFLAGS= `pkg-config --cflags gtk+-3.0`
-LDFLAGS= `pkg-config --libs gtk+-3.0`
+CFLAGS=
+LDFLAGS=
 SRC=$(wildcard $(srcdir)*.c)
 HEAD=$(wildcard *.h)
 OBJ=$(subst $(srcdir), $(bindir), $(SRC:.c=.o))

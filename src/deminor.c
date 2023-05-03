@@ -7,7 +7,6 @@
 */
 
 #include "deminor.h"
-#include "gui.h"
 
 void printBoardGame(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns)
 {
@@ -83,7 +82,7 @@ void printBoardGame(boardCase **ttbc_board, int int_numberOfLines, int int_numbe
     printf("+\n\n");
 }
 
-boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberOfMines, int int_gtk, struct gameData *p_data)
+boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberOfMines, struct gameData *p_data)
 {
     // create the seed to random generator
     srand(time(NULL));
@@ -92,19 +91,6 @@ boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberO
     int int_j;                // iteration variable
     boardCase **ttbc_board;   // board of the game
     boardCase bc_initialCase; // initial case
-    GtkCssProvider *p_cssProvider;
-    GdkDisplay *p_display;
-    GdkScreen *p_screen;
-
-    if (int_gtk == 1)
-    {
-        // code copying from chatGPT to change the color of the buttons, in case where we have a gui
-        p_cssProvider = gtk_css_provider_new();
-        p_display = gdk_display_get_default();
-        p_screen = gdk_display_get_default_screen(p_display);
-        gtk_style_context_add_provider_for_screen(p_screen, GTK_STYLE_PROVIDER(p_cssProvider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-        // end of the copy
-    }
 
     // creation of the table with memory allocation
     ttbc_board = malloc(int_numberOfLines * sizeof(boardCase *) * sizeof(boardCase *));
@@ -128,18 +114,6 @@ boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberO
             ttbc_board[int_i][int_j] = bc_initialCase;
             ttbc_board[int_i][int_j].int_row = int_i;
             ttbc_board[int_i][int_j].int_column = int_j;
-
-            // we have a gui
-            if (int_gtk == 1)
-            {
-                // creation of the button associated to the case
-                ttbc_board[int_i][int_j].p_widget = gtk_button_new_with_label(" ");
-                gtk_css_provider_load_from_data(p_cssProvider, "button { background-color: grey; }", -1, NULL);
-                g_object_set_data(G_OBJECT(ttbc_board[int_i][int_j].p_widget), "boardCase", &ttbc_board[int_i][int_j]);
-
-                // connect the button when this one is pressed (left or right click) and play
-                g_signal_connect(G_OBJECT(ttbc_board[int_i][int_j].p_widget), "button-press-event", G_CALLBACK(playPrint), p_data);
-            }
         }
     }
 
@@ -208,16 +182,11 @@ boardCase **init(int int_numberOfLines, int int_numberOfColumns, int int_numberO
     return (ttbc_board);
 }
 
-void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_i, int int_j, int int_gtk)
+void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_i, int int_j)
 {
     if (ttbc_board[int_i][int_j].int_discovered == 0)
     {
-        ttbc_board[int_i][int_j].int_discovered = 1;
-        // if we have a gui, we have to change the case
-        if (int_gtk == 1)
-        {
-            discoverCase(ttbc_board[int_i][int_j]);
-        }
+        ttbc_board[int_i][int_j].int_discovered = 1;    
 
         // we don't have information with this case, so we discover the next cases
         if (ttbc_board[int_i][int_j].int_numberOfMines == 0)
@@ -226,42 +195,42 @@ void discover(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfCol
             // top
             if (int_i != 0)
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i - 1, int_j, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i - 1, int_j);
             }
             // bottom
             if (int_i != int_numberOfLines - 1)
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i + 1, int_j, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i + 1, int_j);
             }
             // left
             if (int_j != 0)
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i, int_j - 1, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i, int_j - 1);
             }
             // right
             if (int_i != int_numberOfColumns - 1)
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i, int_j + 1, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i, int_j + 1);
             }
             // top left
             if ((int_i != 0) && (int_j != 0))
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i - 1, int_j - 1, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i - 1, int_j - 1);
             }
             // top right
             if ((int_i != 0) && (int_j != int_numberOfColumns - 1))
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i - 1, int_j + 1, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i - 1, int_j + 1);
             }
             // bottom left
             if ((int_i != int_numberOfLines - 1) && (int_j != 0))
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i + 1, int_j - 1, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i + 1, int_j - 1);
             }
             // bottom right
             if ((int_i != int_numberOfLines - 1) && (int_j != int_numberOfColumns - 1))
             {
-                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i + 1, int_j + 1, int_gtk);
+                discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_i + 1, int_j + 1);
             }
         }
     }
@@ -290,7 +259,7 @@ int win(boardCase **ttbc_board, int int_numerOfLines, int int_numberOfColumns)
     return (int_result);
 }
 
-int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_line, int int_column, int int_choice, int int_gtk)
+int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns, int int_line, int int_column, int int_choice)
 {
     int int_result; // -1 if an error is occur, 0 if there is no mine on the case, 1 if a mine is discovered
     int int_confirm;
@@ -318,7 +287,7 @@ int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns,
     else if ((int_choice == 1) && (ttbc_board[int_line][int_column].int_hasFlag == 0))
     {
         // we discover a new case because the case doesn't have a flag
-        discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_line, int_column, int_gtk);
+        discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_line, int_column);
 
         // we verify if we touch a mine or not
         if (ttbc_board[int_line][int_column].int_hasMine == 1)
@@ -334,7 +303,7 @@ int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns,
         if (int_confirm == 1)
         {
             ttbc_board[int_line][int_column].int_hasFlag = 0;
-            discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_line, int_column, int_gtk);
+            discover(ttbc_board, int_numberOfLines, int_numberOfColumns, int_line, int_column);
 
             // we verify if we touch a mine or not
             if (ttbc_board[int_line][int_column].int_hasMine == 1)
@@ -352,19 +321,12 @@ int play(boardCase **ttbc_board, int int_numberOfLines, int int_numberOfColumns,
     {
         // we put a flag
         ttbc_board[int_line][int_column].int_hasFlag = 1;
-        if (int_gtk == 1)
-        {
-            discoverCase(ttbc_board[int_line][int_column]);
-        }
     }
     // we want to pop a flag
     else
     {
         // we delete the flag
         ttbc_board[int_line][int_column].int_hasFlag = 0;
-        {
-            discoverCase(ttbc_board[int_line][int_column]);
-        }
     }
 
     return (int_result);
@@ -385,7 +347,6 @@ void playGame()
     boardCase **ttbc_board;  // the board game
     int int_i;               // iteration variable
     int int_j;               // iteration variable
-    int int_gtk;             // if we want to play with graphical interface or not
 
     // Ask the rules to the player
     int_numberOfLines = inputInteger("Avec combien de lignes voulez-vous jouez ?\n");
@@ -394,12 +355,11 @@ void playGame()
 
     // initialization of variables
     int_result = 0;
-    int_gtk = 0;
     int_time = 0;
     time_start = time(NULL);
 
     // initialization of the board game
-    ttbc_board = init(int_numberOfLines, int_numberOfColumns, int_numberOfMines, 0, NULL);
+    ttbc_board = init(int_numberOfLines, int_numberOfColumns, int_numberOfMines, 0);
 
     // win condition : all case with no mines is discovered & no mines is discovered
     while ((int_result == 0) && (win(ttbc_board, int_numberOfLines, int_numberOfColumns) == 0))
@@ -412,7 +372,7 @@ void playGame()
             int_line = askNumberWithRange("Ligne ?\n", "Veillez renseigner un entier.\n", 0, int_numberOfLines - 1);
             int_column = askNumberWithRange("Colonne ?\n", "Veillez renseigner un entier.\n", 0, int_numberOfColumns - 1);
             int_choice = askNumberWithRange("Découvrir (1) / Drapeau (2)\n", "Veillez renseigner un entier.\n", 1, 2);
-            int_result = play(ttbc_board, int_numberOfLines, int_numberOfColumns, int_line, int_column, int_choice, int_gtk);
+            int_result = play(ttbc_board, int_numberOfLines, int_numberOfColumns, int_line, int_column, int_choice);
         } while (int_result == -1);
     }
 
