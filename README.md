@@ -1,5 +1,5 @@
 # Mineweeper
-(shool project) Recoding the minesweeper game in C. It is a console game.
+(school project) Recoding the minesweeper game in C. It is a console game.
 
 ## Installation :
 ```shell
